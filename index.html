@@ -110,6 +110,41 @@ nav.light-mode .nav-links a::after { background: var(--black); }
 }
 nav.light-mode .nav-search { color: rgba(17,17,16,0.4); }
 
+.nav-toggle {
+  display: none;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(245,243,238,0.25);
+  background: transparent;
+  color: var(--white);
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.nav-toggle span,
+.nav-toggle::before,
+.nav-toggle::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 1px;
+  background: currentColor;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+.nav-toggle span { transform: translateY(0); }
+.nav-toggle::before { transform: translateY(-5px); }
+.nav-toggle::after { transform: translateY(5px); }
+nav.light-mode .nav-toggle {
+  color: var(--black);
+  border-color: rgba(17,17,16,0.2);
+}
+
+nav.nav-open .nav-toggle span { opacity: 0; }
+nav.nav-open .nav-toggle::before { transform: rotate(45deg); }
+nav.nav-open .nav-toggle::after { transform: rotate(-45deg); }
+
+
+
 /* ═══════════════════════════════════════
    HOME — vertical scroll container
 ═══════════════════════════════════════ */
@@ -790,6 +825,132 @@ footer .footer-logo {
 #btn-close.show { opacity: 1; pointer-events: all; transform: scale(1); }
 #btn-close:hover { background: #2a2a2a; }
 #btn-close svg { width: 15px; height: 15px; stroke: white; fill: none; stroke-width: 2; }
+
+/* ═══════════════════════════════════════
+   MOBILE
+═══════════════════════════════════════ */
+@media (max-width: 900px) {
+  nav {
+    padding: 0 16px;
+    justify-content: center;
+  }
+  .nav-logo {
+    margin-right: 0;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    white-space: nowrap;
+  }
+  .nav-search { display: none; }
+  .nav-toggle {
+    display: inline-flex;
+    position: relative;
+    margin-left: auto;
+    z-index: 2;
+  }
+  .nav-links {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    transform: none;
+    flex-direction: column;
+    gap: 0;
+    background: rgba(10,10,10,0.97);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding: 0.5rem 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  nav.nav-open .nav-links {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .nav-links li { text-align: center; }
+  .nav-links a {
+    display: block;
+    padding: 0.9rem 1rem;
+    letter-spacing: 0.18em;
+  }
+
+  .hero-inner {
+    margin-top: 40px;
+    width: 100%;
+    padding: 0 16px;
+  }
+  .hero-eyebrow {
+    letter-spacing: 0.18em;
+    text-align: center;
+  }
+  .hero-sub {
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-align: center;
+    line-height: 1.7;
+  }
+  .scroll-hint {
+    width: 100%;
+    text-align: center;
+    align-items: center;
+  }
+
+  #progetti {
+    padding: 5rem 1rem 4rem;
+  }
+  .section-eyebrow,
+  .section-heading,
+  .section-desc {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .section-desc {
+    max-width: 320px;
+    margin-bottom: 2.2rem;
+  }
+  .filter-tabs {
+    overflow-x: auto;
+    scrollbar-width: none;
+    justify-content: flex-start;
+  }
+  .filter-tabs::-webkit-scrollbar { display: none; }
+  .filter-tab {
+    flex: 0 0 auto;
+    padding: 0.7rem 1rem;
+  }
+
+  .cards-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2px;
+  }
+  .project-card { height: 360px; }
+  .card-info {
+    padding: 1rem 0.5rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .card-name {
+    font-size: clamp(1.15rem, 7vw, 1.75rem);
+    line-height: 0.95;
+    text-align: center;
+  }
+  .card-cat,
+  .card-loc {
+    transform: none;
+  }
+
+  footer {
+    padding: 2rem 1rem;
+    flex-direction: column;
+    gap: 0.6rem;
+    text-align: center;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -804,6 +965,9 @@ footer .footer-logo {
     <li><a href="#">Pianificazione</a></li>
     <li><a href="#">Prodotti</a></li>
   </ul>
+  <button class="nav-toggle" id="nav-toggle" aria-label="Apri menu" aria-expanded="false">
+    <span></span>
+  </button>
   <div class="nav-search">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     Cerca
@@ -945,7 +1109,7 @@ footer .footer-logo {
 
   <footer>
     <span class="footer-logo">QArchitettura</span>
-    <span>© 2025 — Milano, Italia</span>
+    <span>© 2025 — Assemini (CA), Italia</span>
     <span>Privacy · Contatti</span>
   </footer>
 
@@ -1054,8 +1218,25 @@ const panel1       = document.getElementById('panel-1');
 const dots         = document.querySelectorAll('.dot');
 const btnClose     = document.getElementById('btn-close');
 const progressDots = document.getElementById('progress-dots');
+const navToggle    = document.getElementById('nav-toggle');
+const navLinks     = document.querySelectorAll('.nav-links a');
 
 let isOpen = false;
+
+function closeMobileMenu() {
+  navbar.classList.remove('nav-open');
+  if (navToggle) navToggle.setAttribute('aria-expanded', 'false');
+}
+if (navToggle) {
+  navToggle.addEventListener('click', () => {
+    const open = navbar.classList.toggle('nav-open');
+    navToggle.setAttribute('aria-expanded', String(open));
+  });
+  navLinks.forEach(link => link.addEventListener('click', closeMobileMenu));
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 900) closeMobileMenu();
+  });
+}
 
 /* ─── NAVBAR scroll mode ─── */
 home.addEventListener('scroll', () => {
@@ -1079,6 +1260,7 @@ document.getElementById('card-museo').addEventListener('click', openDetail);
 
 function openDetail() {
   if (isOpen) return;
+  closeMobileMenu();
   isOpen = true;
 
   const card = document.getElementById('card-museo');
