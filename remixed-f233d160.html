@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QArchitettura</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --black:      #0a0a0a;
+  --white:      #f5f3ee;
+  --warm-white: #f8f6f1;
+  --accent:     #c8b89a;
+  --grey:       #888;
+  --grey-light: #e8e6e1;
+  --grey-mid:   #999896;
+  --grey-dark:  #444342;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --display: 'Bebas Neue', sans-serif;
+  --sans: 'DM Sans', sans-serif;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  font-family: var(--sans);
+  font-weight: 300;
+  overflow-x: hidden;
+  background: var(--black);
+  color: var(--white);
+}
+
+/* ═══════════════════════════════════════
+   NAVBAR
+═══════════════════════════════════════ */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 500;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  padding: 0 48px;
+  transition: background 0.4s ease, backdrop-filter 0.4s ease, border-color 0.4s ease;
+  border-bottom: 1px solid transparent;
+}
+nav.home-scrolled, nav.detail-mode {
+  background: rgba(10,10,10,0.88);
+  backdrop-filter: blur(18px);
+  border-color: rgba(255,255,255,0.07);
+}
+nav.light-mode {
+  background: rgba(248,246,241,0.92);
+  backdrop-filter: blur(18px);
+  border-color: rgba(0,0,0,0.08);
+}
+
+.nav-logo {
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--white);
+  text-decoration: none;
+  margin-right: auto;
+  transition: color 0.3s;
+  cursor: pointer;
+}
+nav.light-mode .nav-logo { color: var(--black); }
+
+.nav-links {
+  display: flex; gap: 44px;
+  list-style: none;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.nav-links a {
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(245,243,238,0.55);
+  text-decoration: none;
+  position: relative;
+  padding-bottom: 2px;
+  transition: color 0.25s;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0;
+  width: 0; height: 1px;
+  background: var(--accent);
+  transition: width 0.35s cubic-bezier(0.23,1,0.32,1);
+}
+.nav-links a:hover { color: var(--white); }
+.nav-links a:hover::after { width: 100%; }
+nav.light-mode .nav-links a { color: rgba(17,17,16,0.5); }
+nav.light-mode .nav-links a:hover { color: var(--black); }
+nav.light-mode .nav-links a::after { background: var(--black); }
+
+.nav-search {
+  margin-left: 44px;
+  display: flex; align-items: center; gap: 7px;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(245,243,238,0.4);
+}
+nav.light-mode .nav-search { color: rgba(17,17,16,0.4); }
+
+/* ═══════════════════════════════════════
+   HOME — vertical scroll container
+═══════════════════════════════════════ */
+#home {
+  position: fixed;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: opacity 0.5s ease;
+  z-index: 1;
+}
+#home.hidden { opacity: 0; pointer-events: none; }
+
+/* ═══════════════════════════════════════
+   HERO
+═══════════════════════════════════════ */
+#hero {
+  height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  background: var(--black);
+}
+
+#hero-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 50% at 50% 60%, rgba(200,184,154,0.07) 0%, transparent 70%);
+}
+#hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 80px 80px;
+  animation: grid-drift 22s linear infinite;
+}
+@keyframes grid-drift {
+  from { transform: translateY(0); }
+  to   { transform: translateY(80px); }
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  margin-top: 64px;
+}
+
+.hero-eyebrow {
+  font-size: 0.68rem;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--accent);
+  opacity: 0;
+  animation: fade-up 0.9s cubic-bezier(0.23,1,0.32,1) 0.4s forwards;
+  margin-bottom: 2rem;
+}
+
+.hero-title {
+  font-family: var(--display);
+  font-size: clamp(3rem, 7.5vw, 7.5rem);
+  line-height: 0.92;
+  letter-spacing: 0.04em;
+  overflow: hidden;
+}
+.hero-title .line { display: block; overflow: hidden; }
+.hero-title .line span {
+  display: block;
+  transform: translateY(110%);
+  opacity: 0;
+}
+.hero-title .line:nth-child(1) span { animation: slide-up 1s cubic-bezier(0.23,1,0.32,1) 0.55s forwards; }
+.hero-title .line:nth-child(2) span { animation: slide-up 1s cubic-bezier(0.23,1,0.32,1) 0.7s forwards; }
+.hero-title .line:nth-child(3) span { animation: slide-up 1s cubic-bezier(0.23,1,0.32,1) 0.85s forwards; }
+
+.hero-sub {
+  font-size: 0.82rem;
+  color: var(--grey);
+  letter-spacing: 0.12em;
+  margin-top: 2.2rem;
+  opacity: 0;
+  animation: fade-up 0.8s ease 1.5s forwards;
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: 2rem; left: 50%;
+  transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  opacity: 0;
+  animation: fade-up 0.8s ease 2.1s forwards;
+  z-index: 1;
+}
+.scroll-hint span {
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--grey);
+}
+.scroll-line {
+  width: 1px; height: 48px;
+  background: linear-gradient(to bottom, var(--accent), transparent);
+  animation: scroll-pulse 2.2s ease-in-out 2.1s infinite;
+}
+@keyframes scroll-pulse {
+  0%, 100% { opacity: 0.3; transform: scaleY(1); }
+  50%       { opacity: 1;   transform: scaleY(1.25); }
+}
+
+/* ═══════════════════════════════════════
+   PROGETTI — sezione griglia dark
+═══════════════════════════════════════ */
+#progetti {
+  background: #0d0c0a;
+  padding: 7rem 4rem 5rem;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.section-eyebrow {
+  font-size: 0.66rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1.6rem;
+}
+
+.section-heading {
+  font-family: var(--display);
+  font-size: clamp(3rem, 7vw, 6rem);
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.8rem;
+  overflow: hidden;
+}
+.section-heading span {
+  display: block;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: transform 0.9s cubic-bezier(0.23,1,0.32,1), opacity 0.9s ease;
+}
+.section-heading.visible span { transform: translateY(0); opacity: 1; }
+
+.section-desc {
+  max-width: 440px;
+  color: var(--grey);
+  font-size: 0.9rem;
+  line-height: 1.75;
+  margin-bottom: 3.5rem;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.7s ease 0.2s, transform 0.7s ease 0.2s;
+}
+.section-desc.visible { opacity: 1; transform: translateY(0); }
+
+/* Filtri */
+.filter-tabs {
+  display: flex;
+  position: relative;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 3rem;
+}
+.filter-tab {
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--grey);
+  padding: 0.7rem 1.4rem;
+  cursor: pointer;
+  background: none; border: none;
+  font-family: var(--sans);
+  transition: color 0.25s;
+}
+.filter-tab:hover { color: var(--white); }
+.filter-tab.active { color: var(--white); }
+.filter-count { font-size: 0.58rem; vertical-align: super; margin-left: 0.3em; color: var(--accent); }
+.filter-indicator {
+  position: absolute;
+  bottom: -1px; left: 0;
+  height: 2px;
+  background: var(--accent);
+  transition: transform 0.4s cubic-bezier(0.23,1,0.32,1), width 0.4s cubic-bezier(0.23,1,0.32,1);
+}
+
+/* Cards griglia */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+}
+
+.project-card {
+  position: relative;
+  height: 400px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #1a1815;
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.23,1,0.32,1);
+}
+.project-card.visible { opacity: 1; transform: translateY(0); }
+.project-card:nth-child(1) { transition-delay: 0s; }
+.project-card:nth-child(2) { transition-delay: 0.08s; }
+.project-card:nth-child(3) { transition-delay: 0.16s; }
+.project-card:nth-child(4) { transition-delay: 0.04s; }
+.project-card:nth-child(5) { transition-delay: 0.12s; }
+.project-card:nth-child(6) { transition-delay: 0.2s; }
+
+/* blur-up */
+.card-placeholder {
+  position: absolute; inset: 0;
+  filter: blur(20px) saturate(1.4);
+  transform: scale(1.1);
+  transition: opacity 0.9s ease;
+}
+.card-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.05);
+  transition: opacity 0.9s ease, transform 0.7s cubic-bezier(0.23,1,0.32,1);
+}
+.card-img.loaded { opacity: 1; transform: scale(1); }
+.card-img.loaded ~ .card-placeholder { opacity: 0; }
+
+.card-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(10,10,10,0.88) 0%, rgba(10,10,10,0.2) 45%, transparent 70%);
+}
+
+.card-info {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 1.4rem 1.6rem;
+}
+.card-cat {
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.35rem;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.35s ease 0.08s, transform 0.35s ease 0.08s;
+}
+.card-name {
+  font-family: var(--display);
+  font-size: 1.75rem;
+  line-height: 1;
+  letter-spacing: 0.04em;
+}
+.card-loc {
+  font-size: 0.75rem;
+  color: rgba(245,243,238,0.45);
+  margin-top: 0.25rem;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.35s ease 0.13s, transform 0.35s ease 0.13s;
+}
+.card-bar {
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 0; height: 2px;
+  background: var(--accent);
+  transition: width 0.55s cubic-bezier(0.23,1,0.32,1);
+}
+
+.project-card:hover .card-img { transform: scale(1.07); }
+.project-card:hover .card-cat { opacity: 1; transform: translateY(0); }
+.project-card:hover .card-loc { opacity: 1; transform: translateY(0); }
+.project-card:hover .card-bar { width: 100%; }
+
+/* colori placeholder */
+.ph-1 { background: linear-gradient(135deg,#2a2218,#4a3828); }
+.ph-2 { background: linear-gradient(135deg,#1a2530,#2a4560); }
+.ph-3 { background: linear-gradient(135deg,#1e2e1e,#2e4e2e); }
+.ph-4 { background: linear-gradient(135deg,#2e1e18,#5e3e30); }
+.ph-5 { background: linear-gradient(135deg,#28201a,#483828); }
+.ph-6 { background: linear-gradient(135deg,#1a1e2a,#2a2e4a); }
+
+/* ═══════════════════════════════════════
+   NUMERI
+═══════════════════════════════════════ */
+#numeri {
+  background: var(--warm-white);
+  color: var(--black);
+  padding: 7rem 4rem;
+  border-top: 1px solid rgba(0,0,0,0.05);
+}
+#numeri .section-eyebrow { color: #999; }
+#numeri .section-heading span { color: var(--black); }
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  margin-top: 3.5rem;
+}
+.stat-item {
+  border-top: 2px solid rgba(0,0,0,0.12);
+  padding-top: 1.4rem;
+  opacity: 0; transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.stat-item.visible { opacity: 1; transform: translateY(0); }
+.stat-item:nth-child(1) { transition-delay: 0s; }
+.stat-item:nth-child(2) { transition-delay: 0.1s; }
+.stat-item:nth-child(3) { transition-delay: 0.2s; }
+.stat-item:nth-child(4) { transition-delay: 0.3s; }
+.stat-number {
+  font-family: var(--display);
+  font-size: clamp(3rem, 5.5vw, 5rem);
+  line-height: 1;
+  color: var(--black);
+  letter-spacing: 0.02em;
+}
+.stat-number .suffix { color: var(--accent); font-size: 0.65em; }
+.stat-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #888;
+  margin-top: 0.5rem;
+}
+
+/* ═══════════════════════════════════════
+   MANIFESTO
+═══════════════════════════════════════ */
+#manifesto {
+  background: var(--black);
+  padding: 9rem 4rem;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.manifesto-text {
+  font-family: var(--display);
+  font-size: clamp(2.2rem, 4.5vw, 4rem);
+  line-height: 1.18;
+  letter-spacing: 0.03em;
+  max-width: 860px;
+}
+.manifesto-text .word {
+  display: inline-block;
+  opacity: 0.1;
+  transform: translateY(6px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+  margin-right: 0.22em;
+}
+.manifesto-text .word.lit { opacity: 1; transform: translateY(0); color: var(--white); }
+.manifesto-text .word.lit-accent { opacity: 1; transform: translateY(0); color: var(--accent); }
+
+/* ═══════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════ */
+footer {
+  background: #0a0a0a;
+  color: rgba(245,243,238,0.35);
+  padding: 3rem 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+footer .footer-logo {
+  font-family: var(--sans);
+  font-weight: 500;
+  color: var(--white);
+  letter-spacing: 0.15em;
+}
+
+/* ═══════════════════════════════════════
+   ANIMAZIONI COMUNI
+═══════════════════════════════════════ */
+@keyframes slide-up {
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes fade-up {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════════════════════════════════
+   DETAIL OVERLAY — immagine che si espande
+═══════════════════════════════════════ */
+#expand-img {
+  position: fixed;
+  z-index: 600;
+  object-fit: cover;
+  pointer-events: none;
+  opacity: 0;
+  will-change: top, left, width, height;
+}
+
+/* ═══════════════════════════════════════
+   DETAIL SCROLL — pannelli orizzontali
+═══════════════════════════════════════ */
+#detail-scroll {
+  position: fixed;
+  inset: 0;
+  z-index: 601;
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  opacity: 0;
+  pointer-events: none;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  background: var(--warm-white);
+  color: var(--black);
+  cursor: grab;
+  transition: opacity 0.4s ease;
+}
+#detail-scroll::-webkit-scrollbar { display: none; }
+#detail-scroll.open { opacity: 1; pointer-events: all; }
+#detail-scroll:active { cursor: grabbing; }
+
+.panel {
+  flex: none;
+  width: 100vw;
+  height: 100vh;
+  scroll-snap-align: start;
+  position: relative;
+  display: flex;
+}
+
+/* PANEL 1 */
+.panel-hero { padding-top: 64px; }
+
+.panel-hero .col-left {
+  width: 360px; flex: none;
+  padding: 44px 36px 36px;
+  display: flex; flex-direction: column;
+  border-right: 1px solid rgba(0,0,0,0.08);
+  overflow-y: auto;
+  opacity: 0; transform: translateY(18px);
+  transition: opacity 0.5s ease 0.1s, transform 0.5s ease 0.1s;
+}
+.panel-hero.revealed .col-left { opacity: 1; transform: translateY(0); }
+
+.proj-icon {
+  width: 68px; height: 68px;
+  background: var(--black);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 22px; flex-shrink: 0;
+}
+.proj-icon svg { width: 34px; height: 34px; fill: white; }
+
+.proj-title {
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: 1.45rem;
+  line-height: 1.2;
+  margin-bottom: 5px;
+}
+.proj-location {
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--grey-mid);
+  margin-bottom: 36px;
+}
+.proj-year {
+  font-family: var(--serif);
+  font-size: 2.2rem;
+  font-weight: 300;
+  color: var(--grey-mid);
+  margin-bottom: 28px;
+}
+.meta-group { margin-bottom: 24px; }
+.meta-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--grey-mid);
+  margin-bottom: 3px;
+}
+.meta-value {
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.share-row { margin-top: auto; }
+.share-lbl {
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--grey-mid);
+  text-align: right;
+  margin-bottom: 7px;
+}
+.share-icons { display: flex; gap: 7px; justify-content: flex-end; }
+.share-icon {
+  width: 30px; height: 30px;
+  border: 1px solid rgba(0,0,0,0.18);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.68rem; font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  color: var(--black);
+  text-decoration: none;
+  font-family: var(--sans);
+}
+.share-icon:hover { background: var(--black); color: white; }
+
+.panel-hero .col-image {
+  flex: 1; position: relative; overflow: hidden;
+}
+.panel-hero .col-image img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+
+.panel-hero .col-right {
+  width: 320px; flex: none;
+  padding: 56px 36px 36px;
+  overflow-y: auto;
+  border-left: 1px solid rgba(0,0,0,0.08);
+  opacity: 0; transform: translateY(18px);
+  transition: opacity 0.5s ease 0.22s, transform 0.5s ease 0.22s;
+}
+.panel-hero.revealed .col-right { opacity: 1; transform: translateY(0); }
+.proj-desc {
+  font-family: var(--sans);
+  font-size: 0.87rem;
+  line-height: 1.78;
+  color: var(--grey-dark);
+}
+
+.scroll-cue {
+  position: absolute;
+  bottom: 28px; right: 36px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--grey-mid);
+  animation: nudge-x 2.4s ease-in-out infinite;
+}
+@keyframes nudge-x {
+  0%,100% { transform: translateX(0); }
+  50%     { transform: translateX(7px); }
+}
+
+/* PANEL 2 */
+.panel-gallery { padding-top: 64px; background: var(--warm-white); }
+.panel-gallery .img-l {
+  width: calc(50vw - 180px); flex: none; overflow: hidden;
+}
+.panel-gallery .img-l img,
+.panel-gallery .img-r img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+.panel-gallery .txt-c {
+  width: 360px; flex: none;
+  padding: 76px 48px;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.panel-gallery .txt-c p {
+  font-size: 0.88rem;
+  line-height: 1.82;
+  color: var(--grey-dark);
+}
+.panel-gallery .txt-c p + p { margin-top: 1.1em; }
+.panel-gallery .img-r { flex: 1; overflow: hidden; }
+
+/* PANEL 3 — citazione */
+.panel-quote { padding-top: 64px; background: var(--warm-white); }
+.blur-side {
+  width: 26vw; flex: none; overflow: hidden; position: relative;
+}
+.blur-side img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  filter: blur(9px) brightness(1.04);
+  transform: scale(1.06);
+}
+.quote-center {
+  flex: 1; padding: 60px 72px;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.quote-mark {
+  font-family: var(--serif);
+  font-size: 5.5rem;
+  line-height: 0.5;
+  color: var(--grey-light);
+  margin-bottom: 18px;
+  display: block;
+}
+.quote-text {
+  font-family: var(--sans);
+  font-size: clamp(0.9rem, 1.05vw, 1.1rem);
+  line-height: 1.78;
+  color: var(--black);
+  font-weight: 300;
+  max-width: 660px;
+}
+.quote-author {
+  margin-top: 36px;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.quote-author strong { font-weight: 500; }
+.quote-author span { color: var(--grey-mid); margin-left: 7px; }
+
+/* PANEL 4 — strip finale */
+.panel-strip { padding-top: 64px; background: var(--black); flex-direction: column; }
+.strip-bg {
+  position: absolute; inset: 64px 0 0;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 2px;
+}
+.strip-bg > div { overflow: hidden; }
+.strip-bg img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; }
+.strip-footer {
+  position: relative; z-index: 2;
+  margin-top: auto;
+  padding: 36px 44px;
+  display: flex; align-items: flex-end; justify-content: space-between;
+}
+.strip-title {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 3.8vw, 3.2rem);
+  font-weight: 300;
+  font-style: italic;
+  color: white;
+  line-height: 1.1;
+}
+.back-btn {
+  background: white; color: var(--black);
+  border: none; padding: 13px 26px;
+  font-family: var(--sans); font-size: 0.7rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.back-btn:hover { background: var(--grey-light); }
+
+/* ═══════════════════════════════════════
+   UI OVERLAY (punti + chiudi)
+═══════════════════════════════════════ */
+#progress-dots {
+  position: fixed; bottom: 22px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 700;
+  display: flex; gap: 7px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+}
+#progress-dots.show { opacity: 1; }
+.dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: rgba(0,0,0,0.2);
+  transition: background 0.3s, transform 0.3s;
+}
+.dot.active { background: var(--black); transform: scale(1.35); }
+
+#btn-close {
+  position: fixed; top: 72px; right: 28px;
+  z-index: 700;
+  width: 42px; height: 42px;
+  background: var(--black);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s, background 0.2s;
+  transform: scale(0.85);
+  transition: opacity 0.3s, transform 0.3s;
+}
+#btn-close.show { opacity: 1; pointer-events: all; transform: scale(1); }
+#btn-close:hover { background: #2a2a2a; }
+#btn-close svg { width: 15px; height: 15px; stroke: white; fill: none; stroke-width: 2; }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <a class="nav-logo" onclick="handleLogoClick(event)" href="#">QArchitettura</a>
+  <ul class="nav-links">
+    <li><a href="#">Architettura</a></li>
+    <li><a href="#">Interni</a></li>
+    <li><a href="#">Paesaggio</a></li>
+    <li><a href="#">Pianificazione</a></li>
+    <li><a href="#">Prodotti</a></li>
+  </ul>
+  <div class="nav-search">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    Cerca
+  </div>
+</nav>
+
+<!-- ══ HOME ══ -->
+<div id="home">
+
+  <!-- HERO -->
+  <section id="hero">
+    <div id="hero-bg"></div>
+    <div id="hero-grid"></div>
+    <div class="hero-inner">
+      <p class="hero-eyebrow">Studio di Architettura — Assemini (CA)</p>
+      <h1 class="hero-title">
+        <span class="line"><span>LA FORMA</span></span>
+        <span class="line"><span>SEGUE</span></span>
+        <span class="line"><span>LA VISIONE</span></span>
+      </h1>
+      <p class="hero-sub">280+ Progetti &nbsp;·&nbsp; 26 Paesi &nbsp;·&nbsp; Dal 2008</p>
+    </div>
+    <div class="scroll-hint">
+      <span>Scorri</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- PROGETTI -->
+  <section id="progetti">
+    <div class="section-eyebrow">Lavori Selezionati</div>
+    <div class="section-heading"><span>Progetti</span></div>
+    <p class="section-desc">Ogni progetto nasce da un dialogo profondo tra luogo, funzione e materia. Clicca per esplorare.</p>
+
+    <div class="filter-tabs" id="filter-tabs">
+      <button class="filter-tab active">Tutti <span class="filter-count">156</span></button>
+      <button class="filter-tab">Architettura <span class="filter-count">89</span></button>
+      <button class="filter-tab">Interni <span class="filter-count">34</span></button>
+      <button class="filter-tab">Paesaggio <span class="filter-count">21</span></button>
+      <button class="filter-tab">Pianificazione <span class="filter-count">12</span></button>
+      <div class="filter-indicator" id="filter-indicator"></div>
+    </div>
+
+    <div class="cards-grid">
+
+      <!-- Card 1 — CLICKABLE -->
+      <div class="project-card" id="card-museo" data-open="true">
+        <div class="card-placeholder ph-1"></div>
+        <img class="card-img" src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&q=80" alt="Museo Nordico" loading="lazy" onload="this.classList.add('loaded')">
+        <div class="card-overlay"></div>
+        <div class="card-info">
+          <div class="card-cat">Cultura</div>
+          <div class="card-name">Museo Nordico</div>
+          <div class="card-loc">Copenaghen, Danimarca</div>
+        </div>
+        <div class="card-bar"></div>
+      </div>
+
+      <div class="project-card">
+        <div class="card-placeholder ph-2"></div>
+        <img class="card-img" src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80" alt="" loading="lazy" onload="this.classList.add('loaded')">
+        <div class="card-overlay"></div>
+        <div class="card-info">
+          <div class="card-cat">Residenziale</div>
+          <div class="card-name">Casa tra le Fronde</div>
+          <div class="card-loc">Oslo, Norvegia</div>
+        </div>
+        <div class="card-bar"></div>
+      </div>
+
+      <div class="project-card">
+        <div class="card-placeholder ph-3"></div>
+        <img class="card-img" src="https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=800&q=80" alt="" loading="lazy" onload="this.classList.add('loaded')">
+        <div class="card-overlay"></div>
+        <div class="card-info">
+          <div class="card-cat">Istruzione</div>
+          <div class="card-name">Arco della Biblioteca</div>
+          <div class="card-loc">Berlino, Germania</div>
+        </div>
+        <div class="card-bar"></div>
+      </div>
+
+      <div class="project-card">
+        <div class="card-placeholder ph-4"></div>
+        <img class="card-img" src="https://images.unsplash.com/photo-1577495508048-b635879837f1?w=800&q=80" alt="" loading="lazy" onload="this.classList.add('loaded')">
+        <div class="card-overlay"></div>
+        <div class="card-info">
+          <div class="card-cat">Lavoro</div>
+          <div class="card-name">Torre di Vetro</div>
+          <div class="card-loc">Amsterdam, Paesi Bassi</div>
+        </div>
+        <div class="card-bar"></div>
+      </div>
+
+      <div class="project-card">
+        <div class="card-placeholder ph-5"></div>
+        <img class="card-img" src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80" alt="" loading="lazy" onload="this.classList.add('loaded')">
+        <div class="card-overlay"></div>
+        <div class="card-info">
+          <div class="card-cat">Interni</div>
+          <div class="card-name">L'Atrio</div>
+          <div class="card-loc">Milano, Italia</div>
+        </div>
+        <div class="card-bar"></div>
+      </div>
+
+      <div class="project-card">
+        <div class="card-placeholder ph-6"></div>
+        <img class="card-img" src="https://images.unsplash.com/photo-1542621334-a254cf47733d?w=800&q=80" alt="" loading="lazy" onload="this.classList.add('loaded')">
+        <div class="card-overlay"></div>
+        <div class="card-info">
+          <div class="card-cat">Infrastruttura</div>
+          <div class="card-name">Ponte Sospeso</div>
+          <div class="card-loc">Bilbao, Spagna</div>
+        </div>
+        <div class="card-bar"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- NUMERI -->
+  <section id="numeri">
+    <div class="section-eyebrow">Lo Studio in Cifre</div>
+    <div class="section-heading"><span>I Numeri</span></div>
+    <div class="stats-grid">
+      <div class="stat-item"><div class="stat-number" data-target="280" data-suffix="+">0</div><div class="stat-label">Progetti Realizzati</div></div>
+      <div class="stat-item"><div class="stat-number" data-target="26" data-suffix="">0</div><div class="stat-label">Paesi</div></div>
+      <div class="stat-item"><div class="stat-number" data-target="140" data-suffix="+">0</div><div class="stat-label">Collaboratori</div></div>
+      <div class="stat-item"><div class="stat-number" data-target="31" data-suffix="">0</div><div class="stat-label">Premi Vinti</div></div>
+    </div>
+  </section>
+
+  <!-- MANIFESTO -->
+  <section id="manifesto">
+    <div class="section-eyebrow">Manifesto</div>
+    <div class="manifesto-text" id="manifesto-text"></div>
+  </section>
+
+  <footer>
+    <span class="footer-logo">QArchitettura</span>
+    <span>© 2025 — Milano, Italia</span>
+    <span>Privacy · Contatti</span>
+  </footer>
+
+</div><!-- /home -->
+
+<!-- EXPANDING IMAGE -->
+<img id="expand-img" src="" alt="">
+
+<!-- DETAIL HORIZONTAL SCROLL -->
+<div id="detail-scroll">
+
+  <!-- P1: HERO -->
+  <div class="panel panel-hero" id="panel-1">
+    <div class="col-left">
+      <div class="proj-icon">
+        <svg viewBox="0 0 40 40"><rect x="4" y="4" width="14" height="14"/><rect x="22" y="4" width="14" height="14"/><rect x="4" y="22" width="14" height="14"/><rect x="22" y="22" width="14" height="14"/></svg>
+      </div>
+      <div class="proj-title">Museo Nordico</div>
+      <div class="proj-location">Copenaghen, Danimarca</div>
+      <div class="proj-year">2024</div>
+      <div class="meta-group"><div class="meta-label">Tipologia</div><div class="meta-value">Cultura</div></div>
+      <div class="meta-group"><div class="meta-label">Stato</div><div class="meta-value">Completato</div></div>
+      <div class="meta-group"><div class="meta-label">Superficie</div><div class="meta-value">18.400 m²</div></div>
+      <div class="meta-group"><div class="meta-label">Committente</div><div class="meta-value">Fondazione Culturale di Copenaghen</div></div>
+      <div class="share-row">
+        <div class="share-lbl">Condividi</div>
+        <div class="share-icons">
+          <a class="share-icon" href="#">✉</a>
+          <a class="share-icon" href="#">f</a>
+          <a class="share-icon" href="#">in</a>
+          <a class="share-icon" href="#">𝕏</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-image">
+      <img src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1400&q=85" alt="Museo Nordico">
+    </div>
+
+    <div class="col-right">
+      <p class="proj-desc">Il Museo Nordico ridefinisce il rapporto tra istituzione culturale e paesaggio urbano. Concepito come un paesaggio continuo che emerge dal porto, l'edificio integra spazio pubblico, collezione e ambiente in un unico gesto coerente.<br><br>La forma deriva dalla stratificazione geologica della costa nordica — strati di pietra compressa e ghiaccio che hanno modellato la penisola scandinava nel corso dei millenni. Fasce orizzontali di cemento a vista e vetro consentono alla luce di penetrare in profondità nelle gallerie.</p>
+    </div>
+
+    <div class="scroll-cue">
+      Scorri
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </div>
+  </div>
+
+  <!-- P2: GALLERIA -->
+  <div class="panel panel-gallery">
+    <div class="img-l"><img src="https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=900&q=80" alt=""></div>
+    <div class="txt-c">
+      <p>L'allestimento accompagna i visitatori in un viaggio attraverso i materiali — dalla pietra al riciclato. Il programma si sviluppa verticalmente: la circolazione avvolge una serie di gallerie a doppia altezza, ciascuna dedicata a una diversa cultura materiale.</p>
+      <p>Terrazze esterne a cascata collegano la collezione permanente con le mostre temporanee e un giardino pensile affacciato sullo stretto dell'Øresund.</p>
+      <p>Il sistema strutturale — cemento gettato in opera e pannelli prefabbricati in legno — è esposto integralmente, rendendo l'edificio stesso una mostra delle tradizioni artigianali nordiche.</p>
+    </div>
+    <div class="img-r"><img src="https://images.unsplash.com/photo-1545315003-c5ad6226c272?w=900&q=80" alt=""></div>
+  </div>
+
+  <!-- P3: CITAZIONE -->
+  <div class="panel panel-quote">
+    <div class="blur-side"><img src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=600&q=55" alt=""></div>
+    <div class="quote-center">
+      <span class="quote-mark">"</span>
+      <p class="quote-text">Per la natura stessa della professione architettonica, il destino di un progetto si decide sempre nelle fasi iniziali: il concept design o il concorso. Per questo motivo si investe sempre una grande energia nel raccontare come il progetto è stato concepito, l'analisi iniziale, l'idea fondamentale e la sua trasformazione in forma. Ma il 90% del nostro lavoro è ciò che viene dopo — la traduzione dell'idea in realtà, la materializzazione della finzione in fatto. Questo edificio è dedicato a quell'aspetto materiale della nostra professione.</p>
+      <div class="quote-author"><strong>Marco Quaranta</strong><span>— Fondatore e Direttore Creativo, QArchitettura</span></div>
+    </div>
+    <div class="blur-side"><img src="https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=600&q=55" alt=""></div>
+  </div>
+
+  <!-- P4: STRIP -->
+  <div class="panel panel-strip">
+    <div class="strip-bg">
+      <div><img src="https://images.unsplash.com/photo-1573216250648-4f8dc5ca6e28?w=900&q=70" alt=""></div>
+      <div><img src="https://images.unsplash.com/photo-1545315003-c5ad6226c272?w=600&q=70" alt=""></div>
+      <div><img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600&q=70" alt=""></div>
+    </div>
+    <div class="strip-footer">
+      <div class="strip-title">Museo<br><em>Nordico</em></div>
+      <button class="back-btn" onclick="closeDetail()">← Tutti i Progetti</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- UI -->
+<div id="progress-dots">
+  <div class="dot active"></div>
+  <div class="dot"></div>
+  <div class="dot"></div>
+  <div class="dot"></div>
+</div>
+
+<div id="btn-close" onclick="closeDetail()">
+  <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+</div>
+
+<script>
+/* ─── refs ─── */
+const navbar       = document.getElementById('navbar');
+const home         = document.getElementById('home');
+const expandImg    = document.getElementById('expand-img');
+const detailScroll = document.getElementById('detail-scroll');
+const panel1       = document.getElementById('panel-1');
+const dots         = document.querySelectorAll('.dot');
+const btnClose     = document.getElementById('btn-close');
+const progressDots = document.getElementById('progress-dots');
+
+let isOpen = false;
+
+/* ─── NAVBAR scroll mode ─── */
+home.addEventListener('scroll', () => {
+  const y = home.scrollTop;
+  navbar.classList.toggle('home-scrolled', y > 60);
+  // light mode when over white sections
+  const numeriTop = document.getElementById('numeri').offsetTop;
+  const manifTop  = document.getElementById('manifesto').offsetTop;
+  const inLight = y > numeriTop - 80 && y < manifTop - 80;
+  navbar.classList.toggle('light-mode', inLight);
+});
+
+/* ─── LOGO click ─── */
+function handleLogoClick(e) {
+  e.preventDefault();
+  if (isOpen) closeDetail();
+}
+
+/* ─── OPEN PROJECT ─── */
+document.getElementById('card-museo').addEventListener('click', openDetail);
+
+function openDetail() {
+  if (isOpen) return;
+  isOpen = true;
+
+  const card = document.getElementById('card-museo');
+  const img  = card.querySelector('.card-img');
+  const rect = card.getBoundingClientRect();
+
+  // snap expand-img to card position
+  expandImg.src = img.src;
+  Object.assign(expandImg.style, {
+    top: rect.top + 'px', left: rect.left + 'px',
+    width: rect.width + 'px', height: rect.height + 'px',
+    opacity: '1', transition: 'none'
+  });
+
+  home.style.overflow = 'hidden';
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    // animate to fullscreen
+    Object.assign(expandImg.style, {
+      transition: 'top .72s cubic-bezier(.76,0,.24,1), left .72s cubic-bezier(.76,0,.24,1), width .72s cubic-bezier(.76,0,.24,1), height .72s cubic-bezier(.76,0,.24,1)',
+      top: '0', left: '0', width: '100vw', height: '100vh'
+    });
+
+    setTimeout(() => {
+      // show detail
+      detailScroll.scrollLeft = 0;
+      detailScroll.classList.add('open');
+      expandImg.style.opacity = '0';
+      expandImg.style.pointerEvents = 'none';
+      setTimeout(() => panel1.classList.add('revealed'), 80);
+      progressDots.classList.add('show');
+      btnClose.classList.add('show');
+      navbar.classList.remove('home-scrolled', 'light-mode');
+      navbar.classList.add('detail-mode');
+    }, 700);
+  }));
+}
+
+/* ─── CLOSE ─── */
+function closeDetail() {
+  if (!isOpen) return;
+
+  detailScroll.classList.remove('open');
+  panel1.classList.remove('revealed');
+  progressDots.classList.remove('show');
+  btnClose.classList.remove('show');
+  expandImg.style.opacity = '0';
+  navbar.classList.remove('detail-mode');
+
+  setTimeout(() => {
+    isOpen = false;
+    home.style.overflow = 'auto';
+  }, 420);
+}
+
+/* ─── SCROLL dots ─── */
+detailScroll.addEventListener('scroll', () => {
+  const idx = Math.round(detailScroll.scrollLeft / window.innerWidth);
+  dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+});
+
+/* ─── DRAG (mouse) ─── */
+let dragging = false, dStartX = 0, dScrollLeft = 0, dVel = 0, dLastX = 0, dLastT = 0, rafMom = null;
+
+detailScroll.addEventListener('mousedown', e => {
+  if (!isOpen) return;
+  dragging = true;
+  dStartX = e.clientX; dScrollLeft = detailScroll.scrollLeft;
+  dVel = 0; dLastX = e.clientX; dLastT = performance.now();
+  detailScroll.style.scrollSnapType = 'none';
+  if (rafMom) cancelAnimationFrame(rafMom);
+  e.preventDefault();
+});
+document.addEventListener('mousemove', e => {
+  if (!dragging) return;
+  detailScroll.scrollLeft = dScrollLeft - (e.clientX - dStartX);
+  const now = performance.now(), dt = now - dLastT;
+  if (dt > 0) dVel = (dLastX - e.clientX) / dt;
+  dLastX = e.clientX; dLastT = now;
+});
+document.addEventListener('mouseup', e => {
+  if (!dragging) return;
+  dragging = false;
+  detailScroll.style.cursor = '';
+  if (Math.abs(e.clientX - dStartX) < 8) { detailScroll.style.scrollSnapType = 'x mandatory'; return; }
+  momentum(dVel);
+});
+
+function momentum(vel) {
+  const friction = 0.92;
+  let v = vel * 14;
+  function step() {
+    if (Math.abs(v) < 0.5) { snap(); return; }
+    detailScroll.scrollLeft += v;
+    v *= friction;
+    rafMom = requestAnimationFrame(step);
+  }
+  rafMom = requestAnimationFrame(step);
+}
+function snap() {
+  const idx = Math.round(detailScroll.scrollLeft / window.innerWidth);
+  detailScroll.style.scrollSnapType = 'x mandatory';
+  smoothTo(idx * window.innerWidth, 370);
+}
+function smoothTo(target, dur) {
+  const start = detailScroll.scrollLeft, dist = target - start, t0 = performance.now();
+  function step(now) {
+    const p = Math.min((now - t0) / dur, 1);
+    detailScroll.scrollLeft = start + dist * (1 - Math.pow(1 - p, 3));
+    if (p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* ─── WHEEL → horizontal ─── */
+detailScroll.addEventListener('wheel', e => {
+  if (!isOpen) return;
+  e.preventDefault();
+  const delta = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+  if (rafMom) cancelAnimationFrame(rafMom);
+  detailScroll.style.scrollSnapType = 'none';
+  detailScroll.scrollLeft += delta * 1.2;
+  clearTimeout(detailScroll._wt);
+  detailScroll._wt = setTimeout(snap, 110);
+}, { passive: false });
+
+/* ─── TOUCH ─── */
+let tStartX = 0, tScrollL = 0;
+detailScroll.addEventListener('touchstart', e => {
+  tStartX = e.touches[0].clientX; tScrollL = detailScroll.scrollLeft;
+  detailScroll.style.scrollSnapType = 'none';
+  if (rafMom) cancelAnimationFrame(rafMom);
+}, { passive: true });
+detailScroll.addEventListener('touchmove', e => {
+  detailScroll.scrollLeft = tScrollL - (e.touches[0].clientX - tStartX);
+}, { passive: true });
+detailScroll.addEventListener('touchend', e => {
+  momentum(-(e.changedTouches[0].clientX - tStartX) / 300);
+}, { passive: true });
+
+/* ─── KEYBOARD ─── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeDetail(); return; }
+  if (!isOpen) return;
+  const idx = Math.round(detailScroll.scrollLeft / window.innerWidth);
+  if (e.key === 'ArrowRight') smoothTo((idx + 1) * window.innerWidth, 480);
+  if (e.key === 'ArrowLeft')  smoothTo((idx - 1) * window.innerWidth, 480);
+});
+
+/* ─── INTERSECTION OBSERVER (cards + headings + stats) ─── */
+const io = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    entry.target.classList.add('visible');
+    if (entry.target.classList.contains('stat-item')) {
+      const el = entry.target.querySelector('.stat-number');
+      animCount(el, +el.dataset.target, el.dataset.suffix);
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.project-card, .stat-item, .section-heading, .section-desc').forEach(el => io.observe(el));
+
+/* ─── COUNTER ─── */
+function animCount(el, target, suffix) {
+  const dur = 1800, t0 = performance.now();
+  (function step(now) {
+    const p = Math.min((now - t0) / dur, 1);
+    const e = 1 - Math.pow(1 - p, 4);
+    el.innerHTML = Math.round(e * target) + '<span class="suffix">' + suffix + '</span>';
+    if (p < 1) requestAnimationFrame(step);
+  })(t0);
+}
+
+/* ─── MANIFESTO word reveal ─── */
+const mEl  = document.getElementById('manifesto-text');
+const mTxt = 'La nostra architettura nasce dalla tensione tra il possibile e il necessario. Ogni progetto è una risposta alla forza del luogo — materia, luce, contesto urbano. Costruiamo non solo edifici, ma esperienze che restano impresse nella memoria collettiva delle città.';
+const accentW  = ['architettura','possibile','materia','urbano','collettiva'];
+const specialW = ['tensione','luce','memoria','necessario','forza'];
+
+mTxt.split(' ').forEach(w => {
+  const s = document.createElement('span');
+  s.className = 'word';
+  s.textContent = w;
+  const clean = w.replace(/[^a-zA-Zàèéìòù]/g,'');
+  if (accentW.includes(clean))  s.dataset.type = 'accent';
+  if (specialW.includes(clean)) s.dataset.type = 'special';
+  mEl.appendChild(s);
+  mEl.appendChild(document.createTextNode(' '));
+});
+
+home.addEventListener('scroll', () => {
+  const rect = mEl.getBoundingClientRect();
+  const vh   = window.innerHeight;
+  mEl.querySelectorAll('.word').forEach((w, i) => {
+    const progress = 1 - (rect.top - vh * 0.55 + (i / mEl.querySelectorAll('.word').length) * rect.height) / vh;
+    if (progress > 0.28) w.classList.add(w.dataset.type === 'accent' ? 'lit-accent' : 'lit');
+    else w.classList.remove('lit','lit-accent');
+  });
+});
+
+/* ─── FILTER INDICATOR ─── */
+const filterTabs = document.querySelectorAll('.filter-tab');
+const indicator  = document.getElementById('filter-indicator');
+
+function moveInd(tab) {
+  indicator.style.left  = tab.offsetLeft + 'px';
+  indicator.style.width = tab.offsetWidth + 'px';
+}
+filterTabs.forEach(tab => {
+  if (tab.classList.contains('active')) moveInd(tab);
+  tab.addEventListener('click', () => {
+    filterTabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    moveInd(tab);
+  });
+});
+window.addEventListener('resize', () => {
+  const a = document.querySelector('.filter-tab.active');
+  if (a) moveInd(a);
+});
+</script>
+</body>
+</html>
