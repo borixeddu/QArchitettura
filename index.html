@@ -287,6 +287,8 @@ footer .footer-logo{font-family:var(--sans);font-weight:500;color:var(--white);l
 /* ══ MOBILE ══ */
 @media(max-width:900px){
   nav{padding:0 16px;}
+  .scroll-hint{left:50%;transform:translateX(-50%);width:max-content;}
+  .scroll-hint span{display:block;text-align:center;margin-right:-.22em;}
   .nav-search{display:none;}
   .nav-toggle{display:inline-flex;}
   .nav-links{
@@ -563,10 +565,9 @@ footer .footer-logo{font-family:var(--sans);font-weight:500;color:var(--white);l
   // Per conoscere la posizione target del nav-logo devo renderlo
   // temporaneamente visibile ma fuori schermo
   navLogo.style.visibility = 'hidden';
-  navLogo.style.opacity    = '0';
   // forzo layout
   const lastRect = navLogo.getBoundingClientRect();
-  // ripristino (rimane opacity:0, lo rivelerò dopo)
+  // ripristino visibilità (l'opacità iniziale resta gestita dal CSS .nav-logo)
   navLogo.style.visibility = '';
 
   // Switch: da transform:translate(-50%,-50%) a posizione assoluta fissa
