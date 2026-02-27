@@ -1,0 +1,90 @@
+:root {
+  --intro-bg: #0b0b0b;
+  --intro-logo-size: clamp(1.45rem, 4vw, 3rem);
+  --intro-logo-ls: clamp(0.08em, 0.25vw, 0.16em);
+
+  --intro-hold: 350ms;
+  --intro-move-duration: 1500ms;
+  --intro-overlay-duration: 1200ms;
+  --intro-ease: cubic-bezier(0.16, 0.84, 0.44, 1);
+}
+
+#intro {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: var(--intro-bg);
+  color: #f5f3ee;
+  height: 100vh;
+  height: 100svh;
+  padding: 0;
+  overflow: clip;
+  touch-action: none;
+  overscroll-behavior: none;
+  transform: translate3d(0, 0, 0);
+  transition: transform var(--intro-overlay-duration) var(--intro-ease);
+}
+
+
+#introInner {
+  position: absolute;
+  inset: 0;
+  padding:
+    max(12px, env(safe-area-inset-top))
+    max(12px, env(safe-area-inset-right))
+    max(12px, env(safe-area-inset-bottom))
+    max(12px, env(safe-area-inset-left));
+}
+
+body.intro-lock #logoTarget {
+  opacity: 0;
+}
+
+#intro.is-revealing {
+  transform: translate3d(0, -100%, 0);
+}
+
+#intro.is-done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.intro__logo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transform-origin: center center;
+  font-family: "DM Sans", "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: var(--intro-logo-size);
+  font-weight: 500;
+  letter-spacing: var(--intro-logo-ls);
+  color: inherit;
+  white-space: nowrap;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* Mobile timings + tighter logo fitting */
+@media (max-width: 480px) {
+  :root {
+    --intro-logo-size: clamp(1.2rem, 5.6vw, 1.55rem);
+    --intro-logo-ls: 0.1em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --intro-hold: 180ms;
+    --intro-move-duration: 1ms;
+    --intro-overlay-duration: 1ms;
+  }
+}
+
+a,
+button,
+.nav-toggle,
+.back-btn {
+  touch-action: manipulation;
+}
