@@ -949,6 +949,86 @@ footer .footer-logo {
     gap: 0.6rem;
     text-align: center;
   }
+
+  #detail-scroll {
+    display: block;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-snap-type: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .panel {
+    width: 100%;
+    min-height: 100vh;
+    height: auto;
+    display: block;
+  }
+  .panel-hero {
+    display: flex;
+    flex-direction: column;
+    padding-top: 64px;
+  }
+  .panel-hero .col-left,
+  .panel-hero .col-image,
+  .panel-hero .col-right {
+    width: 100%;
+    border: none;
+  }
+  .panel-hero .col-left,
+  .panel-hero .col-right {
+    padding: 1.25rem 1rem;
+    overflow: visible;
+  }
+  .panel-hero .col-image {
+    height: 54vh;
+    min-height: 280px;
+  }
+
+  .panel-gallery {
+    display: flex;
+    flex-direction: column;
+  }
+  .panel-gallery .img-l,
+  .panel-gallery .img-r {
+    width: 100%;
+    height: 45vh;
+    min-height: 260px;
+  }
+  .panel-gallery .txt-c {
+    width: 100%;
+    padding: 2rem 1rem;
+  }
+
+  .panel-quote {
+    display: block;
+  }
+  .panel-quote .blur-side {
+    display: none;
+  }
+  .quote-center {
+    padding: 2rem 1rem;
+  }
+
+  .panel-strip {
+    min-height: 100vh;
+  }
+  .strip-bg {
+    position: relative;
+    inset: auto;
+    grid-template-columns: 1fr;
+    min-height: 56vh;
+  }
+  .strip-footer {
+    padding: 1.5rem 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.9rem;
+  }
+
+  .scroll-cue,
+  #progress-dots {
+    display: none;
+  }
 }
 
 </style>
@@ -1220,8 +1300,13 @@ const btnClose     = document.getElementById('btn-close');
 const progressDots = document.getElementById('progress-dots');
 const navToggle    = document.getElementById('nav-toggle');
 const navLinks     = document.querySelectorAll('.nav-links a');
+const mobileMQ     = window.matchMedia('(max-width: 900px)');
 
 let isOpen = false;
+
+function isMobileView() {
+  return mobileMQ.matches;
+}
 
 function closeMobileMenu() {
   navbar.classList.remove('nav-open');
@@ -1286,6 +1371,7 @@ function openDetail() {
 
     setTimeout(() => {
       // show detail
+      if (isMobileView()) detailScroll.scrollTop = 0;
       detailScroll.scrollLeft = 0;
       detailScroll.classList.add('open');
       expandImg.style.opacity = '0';
@@ -1318,6 +1404,7 @@ function closeDetail() {
 
 /* ─── SCROLL dots ─── */
 detailScroll.addEventListener('scroll', () => {
+  if (isMobileView()) return;
   const idx = Math.round(detailScroll.scrollLeft / window.innerWidth);
   dots.forEach((d, i) => d.classList.toggle('active', i === idx));
 });
@@ -1326,7 +1413,7 @@ detailScroll.addEventListener('scroll', () => {
 let dragging = false, dStartX = 0, dScrollLeft = 0, dVel = 0, dLastX = 0, dLastT = 0, rafMom = null;
 
 detailScroll.addEventListener('mousedown', e => {
-  if (!isOpen) return;
+  if (!isOpen || isMobileView()) return;
   dragging = true;
   dStartX = e.clientX; dScrollLeft = detailScroll.scrollLeft;
   dVel = 0; dLastX = e.clientX; dLastT = performance.now();
@@ -1377,7 +1464,7 @@ function smoothTo(target, dur) {
 
 /* ─── WHEEL → horizontal ─── */
 detailScroll.addEventListener('wheel', e => {
-  if (!isOpen) return;
+  if (!isOpen || isMobileView()) return;
   e.preventDefault();
   const delta = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
   if (rafMom) cancelAnimationFrame(rafMom);
@@ -1390,14 +1477,17 @@ detailScroll.addEventListener('wheel', e => {
 /* ─── TOUCH ─── */
 let tStartX = 0, tScrollL = 0;
 detailScroll.addEventListener('touchstart', e => {
+  if (!isOpen || isMobileView()) return;
   tStartX = e.touches[0].clientX; tScrollL = detailScroll.scrollLeft;
   detailScroll.style.scrollSnapType = 'none';
   if (rafMom) cancelAnimationFrame(rafMom);
 }, { passive: true });
 detailScroll.addEventListener('touchmove', e => {
+  if (!isOpen || isMobileView()) return;
   detailScroll.scrollLeft = tScrollL - (e.touches[0].clientX - tStartX);
 }, { passive: true });
 detailScroll.addEventListener('touchend', e => {
+  if (!isOpen || isMobileView()) return;
   momentum(-(e.changedTouches[0].clientX - tStartX) / 300);
 }, { passive: true });
 
