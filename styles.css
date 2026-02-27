@@ -3,10 +3,10 @@
   --intro-logo-size: clamp(1.45rem, 4vw, 3rem);
   --intro-logo-ls: clamp(0.08em, 0.25vw, 0.16em);
 
-  --intro-hold: 160ms;
-  --intro-move-duration: 900ms;
-  --intro-overlay-duration: 900ms;
-  --intro-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --intro-hold: 350ms;
+  --intro-move-duration: 1500ms;
+  --intro-overlay-duration: 1200ms;
+  --intro-ease: cubic-bezier(0.16, 0.84, 0.44, 1);
 }
 
 #intro {
@@ -71,9 +71,6 @@ body.intro-lock #logoTarget {
   :root {
     --intro-logo-size: clamp(1.2rem, 5.6vw, 1.55rem);
     --intro-logo-ls: 0.1em;
-    --intro-hold: 160ms;
-    --intro-move-duration: 900ms;
-    --intro-overlay-duration: 900ms;
   }
 }
 
