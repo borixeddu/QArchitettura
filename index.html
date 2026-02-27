@@ -5,12 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>QArchitettura</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
-<style>
-/* Critical intro style to avoid FOUC before CSS loads */
-body.intro-lock { overflow: hidden; overscroll-behavior: none; }
-#intro { position: fixed; inset: 0; z-index: 2000; background: #0b0b0b; display: grid; place-items: center; }
-</style>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -353,15 +347,8 @@ footer .footer-logo{font-family:var(--sans);font-weight:500;color:var(--white);l
 }
 </style>
 </head>
-<body class="intro-lock">
+<body>
 
-<div id="intro" aria-hidden="false">
-  <div id="introInner">
-    <div id="introLogo" class="intro__logo" aria-label="QArchitettura">QArchitettura</div>
-  </div>
-</div>
-
-<div id="site-root">
 
 <!-- ══ INTRO ══ -->
 <div id="intro">
@@ -556,7 +543,6 @@ footer .footer-logo{font-family:var(--sans);font-weight:500;color:var(--white);l
   <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
 </div>
 
-<script src="main.js" defer></script>
 <script>
 /* ════════════════════════════════
    INTRO — FLIP logo centrato → navbar sinistra
@@ -847,6 +833,5 @@ filterTabs.forEach(tab=>{
 });
 window.addEventListener('resize',()=>{ const a=document.querySelector('.filter-tab.active'); if(a) moveInd(a); });
 </script>
-</div>
 </body>
 </html>
