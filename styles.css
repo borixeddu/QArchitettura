@@ -1,0 +1,155 @@
+:root {
+  --intro-bg: #0b0b0b;
+  --intro-brand-size: clamp(1.5rem, 4.4vw, 3rem);
+  --intro-brand-ls-start: 0.3em;
+  --intro-brand-ls-end: 0.1em;
+
+  --intro-brand-duration: 600ms;
+  --intro-brand-delay: 90ms;
+  --intro-window-delay: 900ms;
+  --intro-window-duration: 680ms;
+  --intro-fade-duration: 420ms;
+
+  --intro-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --intro-ease-smooth: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* Intro overlay */
+#intro {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: var(--intro-bg);
+  color: #f5f3ee;
+  display: grid;
+  place-items: center;
+  height: 100vh;
+  height: 100dvh;
+  padding:
+    max(1rem, env(safe-area-inset-top))
+    max(1rem, env(safe-area-inset-right))
+    max(1rem, env(safe-area-inset-bottom))
+    max(1rem, env(safe-area-inset-left));
+  overflow: hidden;
+  touch-action: manipulation;
+}
+
+#intro.is-playing .intro__brand,
+#intro.is-playing .intro__window,
+#intro.is-fading {
+  will-change: transform, opacity;
+}
+
+.intro__brand {
+  position: relative;
+  z-index: 2;
+  font-family: "DM Sans", "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: var(--intro-brand-size);
+  font-weight: 500;
+  letter-spacing: var(--intro-brand-ls-start);
+  text-transform: none;
+  opacity: 0;
+  filter: blur(7px);
+  transform: translateY(8px) scale(0.99);
+  pointer-events: none;
+  text-align: center;
+}
+
+.intro__window {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(72vmin, 820px);
+  aspect-ratio: 16 / 10;
+  border: 1px solid rgba(245, 243, 238, 0.32);
+  background: rgba(245, 243, 238, 0.02);
+  transform: translate(-50%, -50%) scale(0.08);
+  transform-origin: center;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#intro.is-playing .intro__brand {
+  animation: intro-brand-in var(--intro-brand-duration) var(--intro-ease-out) var(--intro-brand-delay) forwards;
+}
+
+#intro.is-playing .intro__window {
+  animation: intro-window-open var(--intro-window-duration) var(--intro-ease-smooth) var(--intro-window-delay) forwards;
+}
+
+#intro.is-fading {
+  animation: intro-overlay-fade var(--intro-fade-duration) ease forwards;
+}
+
+/* Hide from interactions after completion */
+#intro.is-done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Keep mobile blur lighter */
+@media (max-width: 480px) {
+  :root {
+    --intro-brand-size: clamp(1.25rem, 7vw, 2rem);
+    --intro-brand-ls-start: 0.18em;
+    --intro-brand-ls-end: 0.08em;
+  }
+  .intro__brand {
+    filter: blur(2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --intro-brand-duration: 1ms;
+    --intro-window-duration: 1ms;
+    --intro-fade-duration: 1ms;
+  }
+}
+
+@keyframes intro-brand-in {
+  0% {
+    opacity: 0;
+    filter: blur(7px);
+    letter-spacing: var(--intro-brand-ls-start);
+    transform: translateY(8px) scale(0.99);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    letter-spacing: var(--intro-brand-ls-end);
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes intro-window-open {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.08);
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(2.2);
+  }
+}
+
+@keyframes intro-overlay-fade {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Touch responsiveness on clickable UI */
+a,
+button,
+.nav-toggle,
+.back-btn {
+  touch-action: manipulation;
+}

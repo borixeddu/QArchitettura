@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>QArchitettura</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+/* Critical intro style to avoid FOUC before CSS loads */
+body.intro-lock { overflow: hidden; }
+#intro { position: fixed; inset: 0; z-index: 2000; background: #0b0b0b; display: grid; place-items: center; }
+</style>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1033,7 +1039,14 @@ footer .footer-logo {
 
 </style>
 </head>
-<body>
+<body class="intro-lock">
+
+<div id="intro" aria-hidden="false">
+  <div class="intro__window" aria-hidden="true"></div>
+  <div class="intro__brand" aria-label="QArchitettura">QArchitettura</div>
+</div>
+
+<div id="site-root">
 
 <!-- NAVBAR -->
 <nav id="navbar">
@@ -1288,6 +1301,7 @@ footer .footer-logo {
   <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
 </div>
 
+<script src="main.js" defer></script>
 <script>
 /* ─── refs ─── */
 const navbar       = document.getElementById('navbar');
@@ -1573,5 +1587,6 @@ window.addEventListener('resize', () => {
   if (a) moveInd(a);
 });
 </script>
+</div>
 </body>
 </html>
