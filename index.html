@@ -128,6 +128,7 @@ nav.light .nav-toggle{color:var(--black);border-color:rgba(17,17,16,.2);}
 .hero-sub{font-size:.82rem;color:var(--grey);letter-spacing:.12em;margin-top:2.2rem;opacity:0;animation:fade-up .8s ease 1.3s forwards;}
 .scroll-hint{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem;opacity:0;animation:fade-up .8s ease 1.9s forwards;z-index:1;}
 .scroll-hint span{font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--grey);}
+.mob-br{display:none;}
 .scroll-line{width:1px;height:48px;background:linear-gradient(to bottom,var(--accent),transparent);animation:scroll-pulse 2.2s ease-in-out 1.9s infinite;}
 @keyframes scroll-pulse{0%,100%{opacity:.3;transform:scaleY(1)}50%{opacity:1;transform:scaleY(1.25)}}
 @keyframes slide-up{to{transform:translateY(0);opacity:1;}}
@@ -287,8 +288,9 @@ footer .footer-logo{font-family:var(--sans);font-weight:500;color:var(--white);l
 /* ══ MOBILE ══ */
 @media(max-width:900px){
   nav{padding:0 16px;}
-  .scroll-hint{left:50%;transform:translateX(-50%);width:max-content;}
-  .scroll-hint span{display:block;text-align:center;margin-right:-.22em;}
+  .hero-eyebrow{font-size:.58rem;letter-spacing:.18em;line-height:1.8;margin-bottom:1rem;}
+  .mob-br{display:block;}
+  .scroll-hint span{margin-right:-.22em;}
   .nav-search{display:none;}
   .nav-toggle{display:inline-flex;}
   .nav-links{
@@ -382,7 +384,7 @@ footer .footer-logo{font-family:var(--sans);font-weight:500;color:var(--white);l
     <div id="hero-bg"></div>
     <div id="hero-grid"></div>
     <div class="hero-inner">
-      <p class="hero-eyebrow">Studio di Architettura — Assemini (CA)</p>
+      <p class="hero-eyebrow">Studio di Architettura<br class="mob-br"> — Assemini (CA)</p>
       <h1 class="hero-title">
         <span class="line"><span>LA FORMA</span></span>
         <span class="line"><span>SEGUE</span></span>
